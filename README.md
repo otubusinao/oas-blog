@@ -1,77 +1,86 @@
-# OAS Ltd Blog
+# OAS Insights
 
-Notion-powered blog for [blog.oassolutions.com.ng](https://blog.oassolutions.com.ng)
+Notion-powered editorial platform for **OAS Solutions Ltd**, published at:
 
-Built by Otubusin Ademuyiwa Solutions Ltd.
+**https://blog.oassolutions.com.ng**
 
----
+OAS Insights is designed as an authority and SEO platform for OAS — covering technology, AI, digital transformation, software, mobility, entrepreneurship and the products we build.
 
-## How it works
+## Publishing workflow
 
-1. Write blog posts in Notion
-2. Tick the **Published** checkbox when ready to go live
-3. GitHub Actions runs every 6 hours and regenerates the blog automatically
-4. Or trigger manually from the GitHub Actions tab
+1. Create an article in the OAS Blog Notion database.
+2. Fill in **Title, Slug, Summary, Date, Category** and **Cover Image URL** where available.
+3. Tick **Published**.
+4. GitHub Actions rebuilds the repository every 6 hours (and can also be triggered manually).
+5. The connected Cloudflare Pages project deploys the updated `dist/` directory.
 
-## Setup
+## Notion properties
 
-### 1. Add GitHub Secrets
+| Property | Type | Required | Purpose |
+|---|---|---:|---|
+| Title | Title | Yes | Article title |
+| Slug | Text | Recommended | Stable URL slug; falls back to title slugification |
+| Summary | Text | Recommended | Search/social/card description |
+| Published | Checkbox | Yes | Controls publication |
+| Date | Date | Recommended | Publication date |
+| Category | Multi-select | Recommended | Topic/category |
+| Cover Image URL | Text | Optional | Absolute URL for article/card image |
 
-Go to your GitHub repository → Settings → Secrets and variables → Actions → New repository secret
+The generator remains compatible with the current database; no new property is required for the upgrade.
 
-Add these four secrets:
+## What the generator now creates
 
-| Secret name | Where to get it |
-|---|---|
-| `NOTION_API_KEY` | notion.so/my-integrations → your integration → Internal Integration Token |
-| `NOTION_DATABASE_ID` | Your Notion database URL — the ID between the last / and ? |
-| `CLOUDFLARE_API_TOKEN` | Cloudflare dashboard → My Profile → API Tokens → Create Token → Edit Cloudflare Pages template |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → right sidebar on any page |
+- Editorial-style OAS Insights homepage
+- Featured latest article
+- Search and topic filtering
+- SEO-friendly category archive pages
+- Article pages with canonical URLs
+- Open Graph and X/Twitter metadata
+- BlogPosting / CollectionPage / Blog structured data
+- Related-article recommendations
+- Author attribution
+- Reading-time estimate
+- Social sharing buttons
+- Giscus comments
+- XML sitemap
+- `robots.txt`
+- RSS feed at `/rss.xml`
+- `llms.txt` for machine-readable site discovery
+- Mobile navigation and responsive layouts
+- Accessibility improvements and reduced-motion support
+- Automatic internal links between articles, categories and OAS products
 
-### 2. Create Cloudflare Pages project
-
-1. Go to Cloudflare dashboard → Workers & Pages → Create → Pages
-2. Connect to your `oas-blog` GitHub repository
-3. Build command: `node generate.js`
-4. Build output directory: `dist`
-5. Add environment variables: `NOTION_API_KEY` and `NOTION_DATABASE_ID`
-
-### 3. Add custom domain
-
-In Cloudflare Pages → your project → Custom domains → Add `blog.oassolutions.com.ng`
-
-### 4. Run locally to test
+## Local build
 
 ```bash
 NOTION_API_KEY=your_key NOTION_DATABASE_ID=your_db_id node generate.js
 ```
 
-Open `dist/index.html` in your browser to preview.
+The generated site is written to `dist/`.
+
+## Cloudflare Pages
+
+The existing Cloudflare Pages setup can continue using:
+
+- Build command: `node generate.js`
+- Build output directory: `dist`
+- Environment variables: `NOTION_API_KEY`, `NOTION_DATABASE_ID`
+
+The GitHub workflow touches `.last-rebuild` every six hours so a connected Cloudflare Pages project receives a new commit and rebuilds the site.
+
+## Strategic content direction
+
+Prioritize original, experience-backed content in these clusters:
+
+- AI & Emerging Technology
+- Business & Digital Transformation
+- Software & Web Development
+- OkRide & Mobility
+- Entrepreneurship & Startups
+- OAS Inside
+
+The goal is not to publish generic SEO filler. The strongest OAS content should document what the company is actually building, testing, learning and observing in the Nigerian market.
 
 ---
 
-## Notion database properties required
-
-| Property | Type | Purpose |
-|---|---|---|
-| Title | Title | Post title |
-| Slug | Text | URL path e.g. `introducing-okride` |
-| Summary | Text | Short description shown on index |
-| Published | Checkbox | Only published posts appear |
-| Date | Date | Publication date |
-| Category | Select | OkRide, Company News, Tech, Nigeria |
-
----
-
-## Publishing a new post
-
-1. Open Notion → OAS Blog database
-2. Create a new row
-3. Fill in Title, Slug, Summary, Date, Category
-4. Write the post body inside the page
-5. Tick **Published** ✅
-6. Wait up to 6 hours for auto-deploy, or trigger manually in GitHub Actions
-
----
-
-© Otubusin Ademuyiwa Solutions Ltd — RC7765644
+© 2026 OAS Solutions Ltd. RC No. RC7765644. All rights reserved.
