@@ -27,4 +27,4 @@ jobs:
           echo "Last rebuild: $(date -u)" > .last-rebuild
           git add .last-rebuild
           git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: rebuild OAS Insights $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push origin main
+          git push origin "${{ github.ref_name }}"
