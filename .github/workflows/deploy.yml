@@ -1,36 +1,30 @@
-name: Trigger Blog Rebuild
+name: Rebuild OAS Insights
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
 
 jobs:
-  trigger-rebuild:
+  rebuild:
     runs-on: ubuntu-latest
-    name: Trigger Cloudflare Pages rebuild
-
-    permissions:
-      contents: write
-
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true
           fetch-depth: 0
 
       - name: Configure git
         run: |
-          git config --global user.name "OAS Blog Bot"
-          git config --global user.email "info@oassolutions.com.ng"
+          git config user.name "OAS Insights Bot"
+          git config user.email "info@oassolutions.com.ng"
 
-      - name: Pull latest and push rebuild trigger
+      - name: Trigger Cloudflare Pages rebuild
         run: |
-          git pull origin main --rebase
           echo "Last rebuild: $(date -u)" > .last-rebuild
           git add .last-rebuild
-          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: trigger blog rebuild $(date -u)"
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "chore: rebuild OAS Insights $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push origin main
