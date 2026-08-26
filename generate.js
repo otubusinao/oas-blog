@@ -858,7 +858,7 @@ function getAdHTML(size = "leaderboard") {
   const map = {
     leaderboard: [`${base}/728x90/affilliates-1.1.webp`, "728", "90", `${base}/320x100/affilliates-4.1.webp`, "320", "100"],
     rectangle: [`${base}/336x280/affilliates-5.1.webp`, "336", "280", `${base}/300X250/affilliates-2.webp`, "300", "250"],
-    sidebar: [`${base}/160x600/affilliates-2.1.webp`, "160", "600", `${base}/300X250/affilliates-1.webp`, "300", "250"],
+    sidebar: [`${base}/160*600/affilliates-2.1.webp`, "160", "600", `${base}/300X250/affilliates-1.webp`, "300", "250"],
   };
   const m = map[size] || map.leaderboard;
   return `<div class="ad-slot"><div class="ad-label">Advertisement</div><div class="ad-leaderboard-desktop"><a href="https://app.go54.com/signup?aff=ademuyiwao" target="_blank" rel="noopener sponsored"><img src="${m[0]}" width="${m[1]}" height="${m[2]}" alt="Go54 web hosting" loading="lazy"></a></div><div class="ad-leaderboard-mobile"><a href="https://app.go54.com/signup?aff=ademuyiwao" target="_blank" rel="noopener sponsored"><img src="${m[3]}" width="${m[4]}" height="${m[5]}" alt="Go54 web hosting" loading="lazy"></a></div></div>`;
