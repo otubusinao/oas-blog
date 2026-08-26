@@ -19,6 +19,15 @@ const SITE_NAME = "OAS Insights";
 const COMPANY_NAME = "OAS Solutions Ltd";
 const DEFAULT_DESCRIPTION = "Practical insights on technology, AI, digital transformation, software, mobility and entrepreneurship from OAS Solutions Ltd.";
 const DEFAULT_OG = `${OAS_URL}/og-default.png`;
+const PRIMARY_CATEGORY_LIMIT = 5;
+
+const PRIMARY_CATEGORY_ORDER = [
+  "AI & Technology",
+  "Business & Digital Transformation",
+  "Software & Web Development",
+  "Mobility",
+  "OAS Inside",
+];
 
 if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
   console.error("Missing NOTION_API_KEY or NOTION_DATABASE_ID environment variables");
@@ -266,7 +275,6 @@ function blocksToHTML(blocks) {
         break;
       }
       case "table":
-        // Table rows are separate blocks; keep a graceful fallback for unsupported nested rows.
         out.push("<div class=\"table-note\">Table content is available in the published source.</div>");
         break;
       case "child_page":
@@ -329,12 +337,20 @@ function relatedPosts(currentPost, posts, limit = 3) {
 
 function categoryDescriptions() {
   return {
-    "Business & Digital Transformation": "Practical thinking on business automation, digital operations and technology-led growth for Nigerian organizations.",
-    "AI & Emerging Technology": "Clear, practical perspectives on artificial intelligence, machine learning and emerging technologies.",
-    "Software & Web Development": "Engineering lessons on software, websites, APIs, cloud, mobile products and digital systems.",
-    "OkRide & Mobility": "Insights from building technology for safer, smarter and more accessible mobility in Nigeria.",
-    "Entrepreneurship & Startups": "Founder lessons, product development, innovation and the realities of building technology businesses in Nigeria.",
-    "OAS Inside": "Product stories, milestones, experiments and lessons from the OAS Solutions team.",
+    "AI & Technology":
+      "Practical perspectives on artificial intelligence, machine learning, automation and emerging technologies.",
+
+    "Business & Digital Transformation":
+      "Practical thinking on business automation, digital operations and technology-led growth for Nigerian organizations.",
+
+    "Software & Web Development":
+      "Engineering lessons on software, websites, APIs, cloud, mobile products and digital systems.",
+
+    "Mobility":
+      "Insights from building technology for safer, smarter and more accessible mobility in Nigeria.",
+
+    "OAS Inside":
+      "Product stories, milestones, experiments and lessons from building OAS Solutions."
   };
 }
 
@@ -349,13 +365,347 @@ function getBaseStyles() {
 :root{--ink:#0A1628;--navy:#0A1F44;--blue:#1E56B0;--light:#EBF2FF;--sky:#3B82F6;--white:#fff;--paper:#F7F9FC;--line:#E5EAF2;--muted:#667085;--gold:#D4AF37;--shadow:0 16px 50px rgba(10,22,40,.08)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.7}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}img{max-width:100%}button,input{font:inherit}
 .skip-link{position:absolute;left:-9999px;top:auto}.skip-link:focus{left:16px;top:16px;z-index:9999;background:#fff;padding:10px 14px;border-radius:8px}
-.nav{position:sticky;top:0;z-index:1000;height:72px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav-inner{max-width:1240px;height:100%;margin:auto;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:28px}.brand{display:flex;align-items:center;gap:13px;font-weight:800;color:var(--ink);text-decoration:none}.brand-mark{width:38px;height:38px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;letter-spacing:-.04em}.brand-logo{width:150px;height:auto;display:block}.brand-insights{font-size:30px;line-height:1;font-weight:700;letter-spacing:-.025em;color:var(--blue);padding-left:14px;border-left:1px solid var(--line);white-space:nowrap}.footer-logo{width:180px;filter:brightness(0) invert(1)}.nav-links{display:flex;align-items:center;gap:22px;list-style:none;margin:0;padding:0}.nav-links a{font-size:14px;font-weight:600;color:#475467}.nav-links a:hover{color:var(--blue);text-decoration:none}.nav-cta{background:var(--blue);color:#fff!important;padding:10px 17px;border-radius:9px}.nav-toggle{display:none;border:0;background:none;padding:8px}.nav-toggle span{display:block;width:22px;height:2px;background:var(--ink);margin:4px 0}
+.nav{position:sticky;top:0;z-index:1000;height:72px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav-inner{
+  max-width:1400px;
+  height:100%;
+  margin:auto;
+  padding:0 4%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px
+}.brand{display:flex;align-items:center;gap:13px;font-weight:800;color:var(--ink);text-decoration:none}.brand-mark{width:38px;height:38px;border-radius:10px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;letter-spacing:-.04em}.brand-logo{width:130px;height:auto;display:block}
+.brand-insights{
+  font-size:26px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.025em;
+  color:var(--blue);
+  padding-left:12px;
+  border-left:1px solid var(--line);
+  white-space:nowrap
+}.footer-logo{width:180px;filter:brightness(0) invert(1)}.nav-links{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  list-style:none;
+  margin:0;
+  padding:0;
+  flex-wrap:nowrap
+}
+
+
+
+.nav-links a{
+  font-size:12.5px;
+  font-weight:600;
+  color:#475467;
+  white-space:nowrap
+}.nav-links a:hover{color:var(--blue);text-decoration:none}.nav-cta{
+  background:var(--blue);
+  color:#fff!important;
+  padding:9px 13px;
+  border-radius:8px
+}.nav-toggle{display:none;border:0;background:none;padding:8px}.nav-toggle span{display:block;width:22px;height:2px;background:var(--ink);margin:4px 0}
 .container{max-width:1240px;margin:0 auto;padding-left:5%;padding-right:5%}.hero{background:linear-gradient(135deg,var(--navy),#102E5F 58%,#1E56B0);color:#fff;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:520px;height:520px;border-radius:50%;right:-180px;top:-240px;background:rgba(59,130,246,.22);filter:blur(4px)}.hero-inner{position:relative;z-index:1;padding-top:86px;padding-bottom:78px;max-width:820px}.eyebrow{display:inline-flex;align-items:center;gap:9px;text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:800;color:rgba(255,255,255,.72);margin-bottom:18px}.eyebrow:before{content:"";width:24px;height:2px;background:var(--gold)}.hero h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(38px,6vw,66px);line-height:1.05;letter-spacing:-.045em;margin:0 0 18px}.hero p{max-width:700px;color:rgba(255,255,255,.72);font-size:18px;margin:0}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 18px;border-radius:9px;font-weight:700;font-size:14px;text-decoration:none}.btn-primary{background:#fff;color:var(--navy)}.btn-secondary{border:1px solid rgba(255,255,255,.24);color:#fff;background:rgba(255,255,255,.06)}
 .page-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:44px;max-width:1240px;margin:0 auto;padding:62px 5%}.section-kicker{text-transform:uppercase;letter-spacing:.14em;color:var(--blue);font-size:11px;font-weight:800;margin-bottom:8px}.section-title{font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,4vw,38px);line-height:1.15;letter-spacing:-.03em;margin:0 0 25px;color:var(--ink)}
 .featured{display:grid;grid-template-columns:1.15fr .85fr;border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:42px;background:#fff;box-shadow:0 8px 30px rgba(10,22,40,.04)}.featured-image{min-height:310px;background:linear-gradient(135deg,#dbe8ff,#f5f8ff)}.featured-image img{width:100%;height:100%;object-fit:cover;display:block}.featured-copy{padding:34px}.post-category{display:inline-flex;background:var(--light);color:var(--blue);padding:4px 10px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin:0 5px 8px 0}.featured h2{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.2;margin:12px 0}.featured h2 a{color:var(--ink)}.featured-summary{color:var(--muted);font-size:15px}.meta{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:20px}.read-more{font-weight:800;font-size:13px;display:inline-flex;margin-top:22px}
 .search-wrap{position:relative;margin:0 0 18px}.search-wrap input{width:100%;padding:13px 16px 13px 43px;border:1px solid var(--line);border-radius:10px;outline:0;color:var(--ink);background:#fff}.search-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,86,176,.1)}.search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted)}.category-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}.cat-pill{padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:#667085;font-size:12px;font-weight:700}.cat-pill:hover,.cat-pill.active{background:var(--blue);border-color:var(--blue);color:#fff;text-decoration:none}
 .posts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.post-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;transition:.25s ease}.post-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#c9d7ee}.post-card-image{height:190px;background:var(--paper);overflow:hidden}.post-card-image img{width:100%;height:100%;object-fit:cover;display:block}.post-card-body{padding:23px}.post-card h2{font-family:Georgia,"Times New Roman",serif;font-size:21px;line-height:1.25;margin:7px 0 10px}.post-card h2 a{color:var(--ink)}.post-card-summary{color:var(--muted);font-size:14px;margin:0}.post-card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.post-date{font-size:12px;color:var(--muted)}
 .sidebar{position:sticky;top:96px;align-self:start;display:flex;flex-direction:column;gap:20px}.widget{border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff}.widget h3{font-family:Georgia,"Times New Roman",serif;margin:0 0 14px;font-size:18px}.widget p{font-size:13px;color:var(--muted);margin:0 0 15px}.widget ul{list-style:none;margin:0;padding:0}.widget li+li{border-top:1px solid var(--line)}.widget li a{display:flex;justify-content:space-between;gap:8px;padding:10px 0;color:#475467;font-size:13px}.count{background:var(--light);color:var(--blue);padding:1px 7px;border-radius:999px;font-size:11px;font-weight:800}.widget-cta{display:block;text-align:center;background:var(--blue);color:#fff!important;padding:10px 14px;border-radius:8px;font-weight:800;font-size:13px}.ad-slot{text-align:center;overflow:hidden}.ad-slot img{display:block;margin:auto;max-width:100%;height:auto;border-radius:8px}.ad-label{text-transform:uppercase;letter-spacing:.12em;color:#98a2b3;font-size:9px;margin-bottom:7px}.ad-leaderboard-mobile{display:none}
+.read-aloud{
+  border:1px solid var(--line);
+  background:var(--paper);
+  border-radius:14px;
+  padding:18px 20px;
+  margin-bottom:34px;
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+}
+
+.read-aloud-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.read-aloud-title{
+  font-weight:800;
+  color:var(--ink);
+  font-size:15px;
+}
+
+.read-aloud-status{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+
+.read-aloud-time{
+  color:var(--muted);
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.read-aloud-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:14px;
+}
+
+.read-aloud-controls button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  padding:8px 13px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.read-aloud-controls button:hover{
+  border-color:var(--blue);
+  color:var(--blue);
+}
+
+.read-aloud-controls button:focus-visible{
+  outline:3px solid rgba(30,86,176,.18);
+  outline-offset:2px;
+}
+
+
+
+@media(max-width:600px){
+  .read-aloud-header{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .read-aloud-controls button{
+    flex:1;
+    min-width:90px;
+  }
+}
+
+.category-directory{
+  max-width:1240px;
+  margin:0 auto;
+  padding:62px 5%
+}
+
+.category-directory-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px
+}
+
+.category-directory-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:25px;
+  background:#fff;
+  transition:.2s ease
+}
+
+.category-directory-card:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow);
+  border-color:#c9d7ee
+}
+
+.category-directory-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px
+}
+
+.category-count{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700
+}
+
+.category-directory-card h2{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:25px;
+  line-height:1.2;
+  margin:10px 0
+}
+
+.category-directory-card h2 a{
+  color:var(--ink)
+}
+
+.category-directory-card p{
+  color:var(--muted);
+  font-size:14px;
+  margin:0 0 18px
+}
+
+.category-latest{
+  border-top:1px solid var(--line);
+  padding-top:14px;
+  margin-top:14px
+}
+
+.category-latest span{
+  display:block;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-size:9px;
+  font-weight:800;
+  margin-bottom:5px
+}
+
+.category-latest strong{
+  display:block;
+  font-size:13px;
+  color:var(--ink)
+}
+
+.category-explore{
+  display:inline-flex;
+  margin-top:18px;
+  font-size:12px;
+  font-weight:800
+}
+
+.category-dropdown{
+  position:relative
+}
+
+.category-dropdown-toggle{
+  border:0;
+  background:none;
+  padding:0;
+  font:inherit;
+  font-size:12.5px;
+  font-weight:600;
+  color:#475467;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap
+}
+
+.category-dropdown-toggle:hover{
+  color:var(--blue)
+}
+
+.dropdown-arrow{
+  font-size:10px;
+  transition:transform .2s ease
+}
+
+.category-dropdown.open .dropdown-arrow{
+  transform:rotate(180deg)
+}
+
+.category-dropdown-menu{
+  position:absolute;
+  top:calc(100% + 14px);
+  left:50%;
+  transform:translateX(-50%) translateY(-5px);
+  width:280px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:8px;
+  margin:0;
+  list-style:none;
+  box-shadow:0 18px 45px rgba(10,22,40,.14);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:.2s ease;
+  z-index:1100
+}
+
+.category-dropdown.open .category-dropdown-menu{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateX(-50%) translateY(0)
+}
+
+.category-dropdown-menu li{
+  margin:0
+}
+
+.category-dropdown-menu li a{
+  display:block;
+  padding:10px 12px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+  color:#475467
+}
+
+.category-dropdown-menu li a:hover{
+  background:var(--light);
+  color:var(--blue);
+  text-decoration:none
+}
+
+.category-dropdown-heading{
+  padding:8px 12px 7px;
+  color:#98a2b3;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-size:9px;
+  font-weight:800
+}
+
+.category-dropdown-footer{
+  border-top:1px solid var(--line);
+  margin-top:5px;
+  padding-top:5px
+}
+
+.category-dropdown-footer a{
+  color:var(--blue)!important;
+  font-weight:800!important
+}
+
+@media(max-width:760px){
+  .category-directory-grid{
+    grid-template-columns:1fr
+  }
+
+  .category-dropdown-menu{
+    position:static;
+    width:100%;
+    transform:none;
+    box-shadow:none;
+    border:0;
+    border-top:1px solid var(--line);
+    border-radius:0;
+    margin-top:6px;
+    padding:4px 0 8px;
+    display:none;
+  }
+
+  .category-dropdown.open .category-dropdown-menu{
+    display:block;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transform:none
+  }
+
+  .category-dropdown-toggle{
+    width:100%;
+    justify-content:space-between;
+    padding:12px 0;
+  }
+}
+
 .post-header{background:linear-gradient(135deg,var(--navy),#12366f);color:#fff}.post-header-inner{max-width:900px;padding:76px 5% 68px;margin:auto}.post-header h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,5.5vw,58px);line-height:1.08;letter-spacing:-.045em;margin:15px 0}.post-summary{font-size:18px;color:rgba(255,255,255,.72);max-width:760px}.post-container{max-width:1240px;margin:auto;padding:55px 5%;display:grid;grid-template-columns:minmax(0,800px) 300px;gap:44px}.post-body{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.85;color:#344054}.post-body p{margin:0 0 24px}.post-body .post-h2{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:28px;line-height:1.25;color:var(--ink);margin:44px 0 15px;letter-spacing:-.025em}.post-body .post-h3{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:21px;line-height:1.3;color:var(--ink);margin:32px 0 10px}.post-body ul,.post-body ol{padding-left:25px;margin:0 0 24px}.post-body li{margin-bottom:9px}.post-body a{font-weight:600}.post-body blockquote{margin:30px 0;padding:18px 24px;border-left:4px solid var(--gold);background:#f8fafc;color:#475467}.post-body pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#101828;color:#d0d5dd;padding:20px;border-radius:12px;overflow:auto;font-size:13px;line-height:1.6}.post-body code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--light);color:var(--blue);padding:2px 5px;border-radius:4px}.post-body pre code{background:none;color:inherit;padding:0}.post-body figure{margin:34px 0}.post-body figure img{width:100%;border-radius:14px;display:block}.post-body figcaption{text-align:center;color:var(--muted);font-family:Inter,ui-sans-serif,sans-serif;font-size:12px;margin-top:8px}.post-body hr{border:0;border-top:1px solid var(--line);margin:42px 0}.callout{display:flex;gap:12px;background:var(--light);border-left:4px solid var(--blue);padding:16px 18px;border-radius:0 10px 10px 0;margin:26px 0;font-family:Inter,ui-sans-serif,sans-serif;font-size:14px;color:#344054}.callout-icon{font-size:20px}.embedded-link{font-family:Inter,ui-sans-serif,sans-serif;background:var(--paper);border:1px solid var(--line);padding:12px 15px;border-radius:10px}.table-note{font-family:Inter,ui-sans-serif,sans-serif;background:var(--paper);border:1px solid var(--line);padding:14px;border-radius:10px;font-size:13px;color:var(--muted)}
 .breadcrumbs{font-size:12px;color:rgba(255,255,255,.55);display:flex;gap:8px;flex-wrap:wrap}.breadcrumbs a{color:rgba(255,255,255,.75)}.author-card{display:flex;gap:15px;align-items:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0;margin-top:46px;font-family:Inter,ui-sans-serif,sans-serif}.avatar{width:52px;height:52px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900}.author-name{font-weight:800;color:var(--ink);font-size:14px}.author-role{font-size:12px;color:var(--muted)}.share{padding-top:25px;font-family:Inter,ui-sans-serif,sans-serif}.share-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--muted)}.share-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.share-links a{border:1px solid var(--line);padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;color:#475467}.related{margin-top:55px;padding-top:36px;border-top:1px solid var(--line)}.related h2{font-family:Georgia,"Times New Roman",serif;font-size:26px;margin:0 0 18px}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.related-card{border:1px solid var(--line);border-radius:12px;padding:16px}.related-card h3{font-family:Inter,ui-sans-serif,sans-serif;font-size:15px;line-height:1.35;margin:7px 0}.related-card p{font-family:Inter,ui-sans-serif,sans-serif;font-size:11px;color:var(--muted);margin:0}.comments{margin-top:50px;padding-top:35px;border-top:1px solid var(--line)}
 .cta-banner{margin-top:45px;background:linear-gradient(135deg,var(--navy),#163c7b);color:#fff;border-radius:18px;padding:28px}.cta-banner h2{font-family:Georgia,"Times New Roman",serif;margin:0 0 7px;font-size:25px}.cta-banner p{margin:0 0 16px;color:rgba(255,255,255,.7);font-size:14px}.cta-banner a{background:#fff;color:var(--navy);padding:10px 15px;border-radius:8px;font-weight:800;font-size:13px;display:inline-block}
@@ -363,21 +713,140 @@ footer{background:var(--navy);color:#fff;margin-top:30px}.footer-inner{max-width
 .back-top{position:fixed;right:22px;bottom:22px;width:42px;height:42px;border:0;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;box-shadow:0 8px 25px rgba(30,86,176,.3);cursor:pointer;opacity:0;visibility:hidden;transition:.2s;z-index:900}.back-top.show{opacity:1;visibility:visible}
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}.hidden{display:none!important}
 @media(max-width:1020px){.page-layout,.post-container{grid-template-columns:1fr}.sidebar{position:static}.featured{grid-template-columns:1fr}.featured-image{min-height:240px}.post-container{padding-top:40px}.related-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.nav{height:64px}.brand{gap:9px}.brand-logo{width:135px}.brand-insights{font-size:24px;padding-left:10px}.nav-links{display:none;position:absolute;left:0;right:0;top:64px;background:#fff;border-bottom:1px solid var(--line);padding:10px 5% 18px;flex-direction:column;align-items:stretch;gap:0;box-shadow:0 15px 30px rgba(10,22,40,.08)}.nav-links.open{display:flex}.nav-links li{border-bottom:1px solid var(--line)}.nav-links a{display:block;padding:12px 0}.nav-cta{display:block!important;margin:10px 0 2px!important;padding:14px 18px!important;text-align:center;border-radius:10px!important}.nav-toggle{display:block}.hero-inner{padding-top:58px;padding-bottom:55px}.hero p{font-size:16px}.page-layout{padding-top:42px}.posts-grid{grid-template-columns:1fr}.featured-copy{padding:25px}.featured h2{font-size:25px}.post-header-inner{padding-top:55px;padding-bottom:50px}.post-summary{font-size:16px}.post-body{font-size:17px}.post-container{padding-left:5%;padding-right:5%}.related-grid{grid-template-columns:1fr}.ad-leaderboard-desktop{display:none}.ad-leaderboard-mobile{display:block}}
+@media(max-width:760px){.nav{height:64px}.brand{gap:9px}.brand-logo{width:135px}.brand-insights{font-size:24px;padding-left:10px}.nav-links{display:none;position:absolute;left:0;right:0;top:64px;background:#fff;border-bottom:1px solid var(--line);padding:10px 5% 18px;flex-direction:column;align-items:stretch;gap:0;box-shadow:0 15px 30px rgba(10,22,40,.08)}.nav-links.open{display:flex}.nav-links li{border-bottom:1px solid var(--line)}.nav-links a{display:block;padding:12px 0}
+.nav-cta{display:block!important;margin:10px 0 2px!important;padding:14px 18px!important;text-align:center;border-radius:10px!important}.nav-toggle{display:block}.hero-inner{padding-top:58px;padding-bottom:55px}.hero p{font-size:16px}.page-layout{padding-top:42px}.posts-grid{grid-template-columns:1fr}.featured-copy{padding:25px}.featured h2{font-size:25px}.post-header-inner{padding-top:55px;padding-bottom:50px}.post-summary{font-size:16px}.post-body{font-size:17px}.post-container{padding-left:5%;padding-right:5%}.related-grid{grid-template-columns:1fr}.ad-leaderboard-desktop{display:none}.ad-leaderboard-mobile{display:block}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.post-card{transition:none}}
 `;
 }
 
-function getNavHTML() {
+function getNavHTML(categories = []) {
+  const ordered = PRIMARY_CATEGORY_ORDER
+    .filter(cat => categories.includes(cat));
+
+  const remaining = categories
+    .filter(cat => !PRIMARY_CATEGORY_ORDER.includes(cat));
+
+  const primaryCategories = [...ordered, ...remaining]
+    .slice(0, PRIMARY_CATEGORY_LIMIT);
+
+  const hasMoreCategories = categories.length > PRIMARY_CATEGORY_LIMIT;
+
+  const categoryItems = primaryCategories.map(cat => `
+    <li>
+      <a href="/category/${categorySlug(cat)}/">
+        ${escapeHTML(cat)}
+      </a>
+    </li>
+  `).join("");
+
+  const allCategoriesLink = hasMoreCategories
+    ? `<li class="category-dropdown-footer">
+         <a href="/categories/">View all categories →</a>
+       </li>`
+    : "";
+
   return `<a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="nav"><div class="nav-inner">
-    <a class="brand" href="/" aria-label="OAS Insights"><img class="brand-logo" src="/assets/oas-logo-full.png" alt="OAS Solutions Ltd."><span class="brand-insights">Insights</span></a>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="/">Insights</a></li><li><a href="/category/ai-emerging-technology/">AI &amp; Tech</a></li><li><a href="/category/okride-mobility/">Mobility</a></li><li><a href="${OAS_URL}/#products">OAS Products</a></li><li><a href="${OKRIDE_URL}">OkRide</a></li><li><a class="nav-cta" href="${OAS_URL}/#contact">Work with OAS</a></li>
-    </ul>
-  </div></header>
-  <script>(function(){const b=document.getElementById('nav-toggle'),n=document.getElementById('nav-links');if(!b||!n)return;b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false')});n.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{n.classList.remove('open');b.setAttribute('aria-expanded','false')}));})();</script>`;
+  <header class="nav">
+    <div class="nav-inner">
+
+      <a class="brand" href="/" aria-label="OAS Insights">
+        <img class="brand-logo" src="/assets/oas-logo-full.png" alt="OAS Solutions Ltd.">
+        <span class="brand-insights">Insights</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        id="nav-toggle"
+        aria-label="Open navigation"
+        aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-links" id="nav-links">
+
+        <li class="category-dropdown">
+          <button
+            class="category-dropdown-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true">
+            Categories <span class="dropdown-arrow">▾</span>
+          </button>
+
+          <ul class="category-dropdown-menu">
+            <li class="category-dropdown-heading">
+              <span>Browse categories</span>
+            </li>
+            ${categoryItems}
+            ${allCategoriesLink}
+          </ul>
+        </li>
+
+        <li>
+          <a href="${OAS_URL}/#products">OAS Products</a>
+        </li>
+
+        <li>
+          <a href="${OKRIDE_URL}">OkRide</a>
+        </li>
+
+        <li>
+          <a class="nav-cta" href="${OAS_URL}/#contact">
+            Work with OAS
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </header>
+
+  <script>
+  (function(){
+    const toggle = document.getElementById('nav-toggle');
+    const nav = document.getElementById('nav-links');
+    const categoryToggle = document.querySelector('.category-dropdown-toggle');
+    const categoryDropdown = document.querySelector('.category-dropdown');
+
+    if (!toggle || !nav) return;
+
+    toggle.addEventListener('click', function(){
+      const open = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    if (categoryToggle && categoryDropdown) {
+      categoryToggle.addEventListener('click', function(e){
+        e.stopPropagation();
+
+        const open = categoryDropdown.classList.toggle('open');
+        categoryToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', function(e){
+        if (!categoryDropdown.contains(e.target)) {
+          categoryDropdown.classList.remove('open');
+          categoryToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    nav.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        nav.classList.remove('open');
+
+        if (categoryDropdown) {
+          categoryDropdown.classList.remove('open');
+        }
+
+        toggle.setAttribute('aria-expanded', 'false');
+
+        if (categoryToggle) {
+          categoryToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  })();
+  </script>`;
 }
 
 function getFooterHTML() {
@@ -389,7 +858,7 @@ function getAdHTML(size = "leaderboard") {
   const map = {
     leaderboard: [`${base}/728x90/affilliates-1.1.webp`, "728", "90", `${base}/320x100/affilliates-4.1.webp`, "320", "100"],
     rectangle: [`${base}/336x280/affilliates-5.1.webp`, "336", "280", `${base}/300X250/affilliates-2.webp`, "300", "250"],
-    sidebar: [`${base}/160*600/affilliates-2.1.webp`, "160", "600", `${base}/300X250/affilliates-1.webp`, "300", "250"],
+    sidebar: [`${base}/160x600/affilliates-2.1.webp`, "160", "600", `${base}/300X250/affilliates-1.webp`, "300", "250"],
   };
   const m = map[size] || map.leaderboard;
   return `<div class="ad-slot"><div class="ad-label">Advertisement</div><div class="ad-leaderboard-desktop"><a href="https://app.go54.com/signup?aff=ademuyiwao" target="_blank" rel="noopener sponsored"><img src="${m[0]}" width="${m[1]}" height="${m[2]}" alt="Go54 web hosting" loading="lazy"></a></div><div class="ad-leaderboard-mobile"><a href="https://app.go54.com/signup?aff=ademuyiwao" target="_blank" rel="noopener sponsored"><img src="${m[3]}" width="${m[4]}" height="${m[5]}" alt="Go54 web hosting" loading="lazy"></a></div></div>`;
@@ -419,8 +888,8 @@ function commonHead({ title, description, canonical, image = DEFAULT_OG, type = 
   return `<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0A1F44"><meta name="description" content="${escapeAttr(truncate(description || DEFAULT_DESCRIPTION, 160))}"><link rel="canonical" href="${escapeAttr(canonical)}"><link rel="alternate" type="application/rss+xml" title="${SITE_NAME}" href="${SITE_URL}/rss.xml"><link rel="icon" href="/assets/oas-icon.png" type="image/png"><meta property="og:title" content="${escapeAttr(title)}"><meta property="og:description" content="${escapeAttr(truncate(description || DEFAULT_DESCRIPTION, 200))}"><meta property="og:url" content="${escapeAttr(canonical)}"><meta property="og:type" content="${type}"><meta property="og:site_name" content="${SITE_NAME}"><meta property="og:image" content="${escapeAttr(image)}"><meta property="og:image:alt" content="${escapeAttr(title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeAttr(title)}"><meta name="twitter:description" content="${escapeAttr(truncate(description || DEFAULT_DESCRIPTION, 200))}"><meta name="twitter:image" content="${escapeAttr(image)}"><title>${escapeHTML(title)}</title>${json}`;
 }
 
-function pageShell({ title, head, body }) {
-  return `<!doctype html><html lang="en"><head>${head}<link rel="preconnect" href="https://fonts.googleapis.com"><style>${getBaseStyles()}</style></head><body>${getNavHTML()}${body}${getFooterHTML()}${getBackTop()}</body></html>`;
+function pageShell({ title, head, body, categories = [] }) {
+  return `<!doctype html><html lang="en"><head>${head}<link rel="preconnect" href="https://fonts.googleapis.com"><style>${getBaseStyles()}</style></head><body>${getNavHTML(categories)}${body}${getFooterHTML()}${getBackTop()}</body></html>`;
 }
 
 // ─── INDEX ────────────────────────────────────────────────────────────────────
@@ -444,12 +913,122 @@ function generateIndexPage(posts) {
     "blogPost":posts.slice(0,10).map(p=>{const m=getPostMeta(p);return {"@type":"BlogPosting","headline":m.title,"url":postUrl(m.slug),"datePublished":isoDate(m.date)};})
   };
 
-  const body = `<main id="main-content"><section class="hero"><div class="container hero-inner"><div class="eyebrow">OAS Solutions Ltd</div><h1>Ideas, technology and lessons from building in Nigeria.</h1><p>OAS Insights documents what we are learning while building digital products, applying AI, solving business problems and creating technology for real-world needs.</p><div class="hero-actions"><a class="btn btn-primary" href="#latest">Explore insights</a><a class="btn btn-secondary" href="${OAS_URL}/#products">Explore OAS products</a></div></div></section><div class="page-layout"><main class="page-main"><div id="latest" class="section-kicker">Latest thinking</div><h2 class="section-title">Featured insight</h2>${featuredHTML}<div class="section-kicker">Browse the library</div><h2 class="section-title">Latest insights</h2><div class="search-wrap"><span class="search-icon">⌕</span><input id="blog-search" type="search" placeholder="Search insights by topic or keyword…" aria-label="Search insights" autocomplete="off"></div>${getCategoryNavHTML(categories)}<div id="search-results"></div><div id="posts-grid" class="posts-grid">${cards || '<div class="empty">No published insights yet.</div>'}</div></main>${getSidebarHTML(posts,categories)}</div></main><script>const SEARCH_INDEX=${JSON.stringify(searchIndex)};const input=document.getElementById('blog-search'),grid=document.getElementById('posts-grid'),results=document.getElementById('search-results');const pills=[...document.querySelectorAll('.cat-pill')];let active='all';function card(p){return '<article class="post-card"><div class="post-card-body">'+(p.categories||[]).slice(0,2).map(c=>'<span class="post-category">'+c+'</span>').join('')+'<h2><a href="/posts/'+encodeURIComponent(p.slug)+'/">'+p.title+'</a></h2><p class="post-card-summary">'+p.summary+'</p><div class="post-card-footer"><span class="post-date">'+new Date(p.date).toLocaleDateString('en-NG',{year:'numeric',month:'long',day:'numeric'})+'</span><a class="read-more" href="/posts/'+encodeURIComponent(p.slug)+'/">Read →</a></div></div></article>'}function render(){const q=(input.value||'').trim().toLowerCase();const m=SEARCH_INDEX.filter(p=>(active==='all'||(p.categories||[]).includes(active))&&(!q||[p.title,p.summary,(p.categories||[]).join(' ')].join(' ').toLowerCase().includes(q)));if(!q&&active==='all'){grid.classList.remove('hidden');results.innerHTML='';return}grid.classList.add('hidden');results.innerHTML=m.length?'<p class="meta"><strong>'+m.length+'</strong> matching insight'+(m.length===1?'':'s')+'</p><div class="posts-grid">'+m.map(card).join('')+'</div>':'<div class="empty">No matching insights found.</div>'}input.addEventListener('input',render);pills.forEach(p=>p.addEventListener('click',e=>{e.preventDefault();active=p.dataset.category;pills.forEach(x=>x.classList.toggle('active',x.dataset.category===active));render()}));</script>`;
-  return pageShell({ title: `${SITE_NAME} — Technology, AI, Mobility & Business Insights`, head: commonHead({title:`${SITE_NAME} — Technology, AI, Mobility & Business Insights`,description:DEFAULT_DESCRIPTION,canonical:SITE_URL+"/",jsonld:schema}), body });
+  const body = `<main id="main-content"><section class="hero"><div class="container hero-inner"><div class="eyebrow">OAS Solutions Ltd</div><h1>Ideas, technology and lessons from building in Nigeria.</h1><p>OAS Insights documents what we are learning while building digital products, applying AI, solving business problems and creating technology for real-world needs.</p><div class="hero-actions"><a class="btn btn-primary" href="#latest">Explore insights</a><a class="btn btn-secondary" href="${OAS_URL}/#products">Explore OAS products</a></div></div></section><div class="page-layout"><main class="page-main"><div id="latest" class="section-kicker">Latest thinking</div><h2 class="section-title">Featured insight</h2>${featuredHTML}<div class="section-kicker">Browse the library</div><h2 class="section-title">Latest insights</h2><div class="search-wrap"><span class="search-icon">⌕</span><input id="blog-search" type="search" placeholder="Search insights by topic or keyword…" aria-label="Search insights" autocomplete="off"></div>${getCategoryNavHTML(categories)}<div id="search-results"></div><div id="posts-grid" class="posts-grid">${cards || '<div class="empty">No published insights yet.</div>'}</div></main>${getSidebarHTML(posts,categories)}</div></main><script>const SEARCH_INDEX=${JSON.stringify(searchIndex)};const input=document.getElementById('blog-search'),grid=document.getElementById('posts-grid'),results=document.getElementById('search-results');const pills=[...document.querySelectorAll('.cat-pill')];let active='all';function escapeSearchHTML(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}function card(p){return '<article class="post-card"><div class="post-card-body">'+(p.categories||[]).slice(0,2).map(c=>'<span class="post-category">'+escapeSearchHTML(c)+'</span>').join('')+'<h2><a href="/posts/'+encodeURIComponent(p.slug)+'/">'+escapeSearchHTML(p.title)+'</a></h2><p class="post-card-summary">'+escapeSearchHTML(p.summary)+'</p><div class="post-card-footer"><span class="post-date">'+new Date(p.date).toLocaleDateString('en-NG',{year:'numeric',month:'long',day:'numeric'})+'</span><a class="read-more" href="/posts/'+encodeURIComponent(p.slug)+'/">Read →</a></div></div></article>'}function render(){const q=(input.value||'').trim().toLowerCase();const m=SEARCH_INDEX.filter(p=>(active==='all'||(p.categories||[]).includes(active))&&(!q||[p.title,p.summary,(p.categories||[]).join(' ')].join(' ').toLowerCase().includes(q)));if(!q&&active==='all'){grid.classList.remove('hidden');results.innerHTML='';return}grid.classList.add('hidden');results.innerHTML=m.length?'<p class="meta"><strong>'+m.length+'</strong> matching insight'+(m.length===1?'':'s')+'</p><div class="posts-grid">'+m.map(card).join('')+'</div>':'<div class="empty">No matching insights found.</div>'}input.addEventListener('input',render);pills.forEach(p=>p.addEventListener('click',e=>{e.preventDefault();active=p.dataset.category;pills.forEach(x=>x.classList.toggle('active',x.dataset.category===active));render()}));</script>`;
+  return pageShell({
+  title: `${SITE_NAME} — Technology, AI, Mobility & Business Insights`,
+  head: commonHead({
+    title:`${SITE_NAME} — Technology, AI, Mobility & Business Insights`,
+    description:DEFAULT_DESCRIPTION,
+    canonical:SITE_URL+"/",
+    jsonld:schema
+  }),
+  body,
+  categories
+});
 }
 
 function getCategoryNavHTML(categories, active = null) {
   return `<nav class="category-nav" aria-label="Browse topics"><a class="cat-pill ${active===null?'active':''}" data-category="all" href="/">All</a>${categories.map(c=>`<a class="cat-pill ${active===c?'active':''}" data-category="${escapeAttr(c)}" href="/category/${categorySlug(c)}/">${escapeHTML(c)}</a>`).join("")}</nav>`;
+}
+
+function generateCategoriesPage(categories, posts) {
+  const cards = categories.map(category => {
+    const categoryPosts = posts
+      .filter(p => getPostMeta(p).categories.includes(category))
+      .sort((a, b) =>
+        new Date(getPostMeta(b).date) - new Date(getPostMeta(a).date)
+      );
+
+    const description = getCategoryDescription(category);
+    const latest = categoryPosts[0];
+    const latestMeta = latest ? getPostMeta(latest) : null;
+
+    return `
+      <article class="category-directory-card">
+        <div class="category-directory-top">
+          <span class="post-category">${escapeHTML(category)}</span>
+          <span class="category-count">
+            ${categoryPosts.length}
+            ${categoryPosts.length === 1 ? "insight" : "insights"}
+          </span>
+        </div>
+
+        <h2>
+          <a href="/category/${categorySlug(category)}/">
+            ${escapeHTML(category)}
+          </a>
+        </h2>
+
+        <p>${escapeHTML(description)}</p>
+
+        ${latestMeta ? `
+          <div class="category-latest">
+            <span>Latest insight</span>
+            <strong>${escapeHTML(latestMeta.title)}</strong>
+          </div>
+        ` : ""}
+
+        <a
+          class="category-explore"
+          href="/category/${categorySlug(category)}/">
+          Explore category →
+        </a>
+      </article>
+    `;
+  }).join("");
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": `Categories — ${SITE_NAME}`,
+    "url": `${SITE_URL}/categories/`,
+    "description": "Browse all OAS Insights categories.",
+    "isPartOf": {
+      "@type": "Blog",
+      "name": SITE_NAME,
+      "url": SITE_URL
+    }
+  };
+
+  const body = `
+    <main id="main-content">
+
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="eyebrow">OAS Insights</div>
+          <h1>Explore our categories.</h1>
+          <p>
+            Browse practical insights across technology, business,
+            software, mobility and the work we are doing at OAS Solutions.
+          </p>
+        </div>
+      </section>
+
+      <div class="category-directory">
+        <div class="section-kicker">Browse the library</div>
+        <h2 class="section-title">
+          ${categories.length} ${categories.length === 1 ? "category" : "categories"}
+        </h2>
+
+        <div class="category-directory-grid">
+          ${cards || '<div class="empty">No categories yet.</div>'}
+        </div>
+      </div>
+
+    </main>
+  `;
+
+  return pageShell({
+    title: `Categories — ${SITE_NAME}`,
+    head: commonHead({
+      title: `Categories — ${SITE_NAME}`,
+      description: "Browse all OAS Insights categories.",
+      canonical: `${SITE_URL}/categories/`,
+      jsonld: schema
+    }),
+    body,
+    categories
+  });
 }
 
 // ─── CATEGORY ─────────────────────────────────────────────────────────────────
@@ -460,7 +1039,17 @@ function generateCategoryPage(category, posts, categories) {
   const description=getCategoryDescription(category); const url=categoryUrl(category);
   const schema={"@context":"https://schema.org","@type":"CollectionPage","name":`${category} — ${SITE_NAME}`,"url":url,"description":description,"isPartOf":{"@type":"Blog","name":SITE_NAME,"url":SITE_URL}};
   const body=`<main id="main-content"><section class="hero"><div class="container hero-inner"><div class="eyebrow"><a href="/" style="color:inherit">OAS Insights</a></div><h1>${escapeHTML(category)}</h1><p>${escapeHTML(description)}</p></div></section><div class="page-layout"><main class="page-main"><div class="section-kicker">Topic archive</div><h2 class="section-title">${filtered.length} insight${filtered.length===1?'':'s'}</h2><div class="posts-grid">${cards||'<div class="empty">No published insights in this topic yet.</div>'}</div></main>${getSidebarHTML(posts,categories,category)}</div></main>`;
-  return pageShell({title:`${category} — ${SITE_NAME}`,head:commonHead({title:`${category} — ${SITE_NAME}`,description,canonical:url,jsonld:schema}),body});
+  return pageShell({
+  title:`${category} — ${SITE_NAME}`,
+  head:commonHead({
+    title:`${category} — ${SITE_NAME}`,
+    description,
+    canonical:url,
+    jsonld:schema
+  }),
+  body,
+  categories
+});
 }
 
 // ─── POST ─────────────────────────────────────────────────────────────────────
@@ -470,8 +1059,160 @@ function generatePostPage(post, blocks, posts, categories) {
   const tags=m.categories.map(c=>`<a class="post-category" href="/category/${categorySlug(c)}/">${escapeHTML(c)}</a>`).join("");
   const relatedHTML=related.map(p=>{const r=getPostMeta(p);return `<article class="related-card">${r.categories[0]?`<span class="post-category">${escapeHTML(r.categories[0])}</span>`:""}<h3><a href="/posts/${encodeURIComponent(r.slug)}/">${escapeHTML(r.title)}</a></h3><p>${escapeHTML(formatDate(r.date))}</p></article>`}).join("");
   const schema={"@context":"https://schema.org","@type":"BlogPosting","headline":m.title,"description":m.summary,"url":url,"datePublished":isoDate(m.date),"dateModified":isoDate(m.date),"author":{"@type":"Person","name":"Ademuyiwa Otubusin","jobTitle":"Founder & CEO","worksFor":{"@type":"Organization","name":COMPANY_NAME,"url":OAS_URL}},"publisher":{"@type":"Organization","name":COMPANY_NAME,"url":OAS_URL,"logo":{"@type":"ImageObject","url":`${OAS_URL}/android-chrome-512x512.png`}},"image":image,"mainEntityOfPage":{"@type":"WebPage","@id":url},"articleSection":m.categories};
-  const body=`<main id="main-content"><header class="post-header"><div class="post-header-inner"><div class="breadcrumbs"><a href="/">OAS Insights</a><span>›</span>${m.categories[0]?`<a href="/category/${categorySlug(m.categories[0])}/">${escapeHTML(m.categories[0])}</a><span>›</span>`:""}<span>${escapeHTML(m.title)}</span></div><div style="margin-top:22px">${tags}</div><h1>${escapeHTML(m.title)}</h1><p class="post-summary">${escapeHTML(m.summary)}</p><div class="meta" style="color:rgba(255,255,255,.55)"><span>${escapeHTML(formatDate(m.date))}</span><span>•</span><span>${readingTime(text)} min read</span></div></div></header><div style="padding:22px 5% 0;max-width:1240px;margin:auto">${getAdHTML('leaderboard')}</div><div class="post-container"><article class="page-main"><div class="post-body">${content}</div><div class="cta-banner"><h2>Building something that matters?</h2><p>OAS Solutions helps organizations turn ideas, business problems and opportunities into practical digital products.</p><a href="${OAS_URL}/#contact">Talk to OAS Solutions →</a></div><div class="author-card"><div class="avatar">A</div><div><div class="author-name">Ademuyiwa Otubusin</div><div class="author-role">Founder &amp; CEO, OAS Solutions Ltd</div></div></div><div class="share"><div class="share-title">Share this insight</div><div class="share-links"><a target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}">LinkedIn</a><a target="_blank" rel="noopener" href="https://api.whatsapp.com/send?text=${encodeURIComponent(m.title+' — '+url)}">WhatsApp</a><a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(m.title)}&url=${encodeURIComponent(url)}">X</a></div></div><section class="comments"><h2 class="section-title" style="font-size:25px;margin-bottom:7px">Join the conversation</h2><p style="color:var(--muted);font-size:13px">Comments are powered by GitHub Discussions.</p><script src="https://giscus.app/client.js" data-repo="tay4real/oas-blog" data-repo-id="R_kgDOSib5Pw" data-category="Announcements" data-category-id="DIC_kwDOSib5P84C9dFj" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="light" data-lang="en" crossorigin="anonymous" async></script></section>${relatedHTML?`<section class="related"><h2>More from OAS Insights</h2><div class="related-grid">${relatedHTML}</div></section>`:""}</article>${getSidebarHTML(posts,categories,m.categories[0]||null)}</div></main>`;
-  return pageShell({title:`${m.title} — ${SITE_NAME}`,head:commonHead({title:`${m.title} — ${SITE_NAME}`,description:m.summary,canonical:url,image,type:'article',jsonld:schema}),body});
+  const body=`<main id="main-content"><header class="post-header"><div class="post-header-inner"><div class="breadcrumbs"><a href="/">OAS Insights</a><span>›</span>${m.categories[0]?`<a href="/category/${categorySlug(m.categories[0])}/">${escapeHTML(m.categories[0])}</a><span>›</span>`:""}<span>${escapeHTML(m.title)}</span></div><div style="margin-top:22px">${tags}</div><h1>${escapeHTML(m.title)}</h1><p class="post-summary">${escapeHTML(m.summary)}</p><div class="meta" style="color:rgba(255,255,255,.55)"><span>${escapeHTML(formatDate(m.date))}</span><span>•</span><span>${readingTime(text)} min read</span></div></div></header><div style="padding:22px 5% 0;max-width:1240px;margin:auto">${getAdHTML('leaderboard')}</div><div class="post-container"><article class="page-main">
+  <div class="read-aloud" aria-label="Read article aloud">
+    <div class="read-aloud-header">
+      <div>
+        <div class="read-aloud-title">🔊 Read this article</div>
+        <div class="read-aloud-status" id="read-aloud-status">Listen to this insight</div>
+      </div>
+      <div class="read-aloud-time">${readingTime(text)} min read</div>
+    </div>
+
+    <div class="read-aloud-controls">
+      <button type="button" id="read-aloud-play" aria-label="Play article">▶ Play</button>
+      <button type="button" id="read-aloud-pause" aria-label="Pause reading">⏸ Pause</button>
+      <button type="button" id="read-aloud-stop" aria-label="Stop reading">⏹ Stop</button>
+    </div>
+  </div>
+
+  <div class="post-body" id="article-content">${content}</div>
+  <script>
+(function(){
+  const play = document.getElementById("read-aloud-play");
+  const pause = document.getElementById("read-aloud-pause");
+  const stop = document.getElementById("read-aloud-stop");
+  const status = document.getElementById("read-aloud-status");
+  const article = document.getElementById("article-content");
+
+  if (!play || !pause || !stop || !status || !article) return;
+
+  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+    status.textContent = "Read aloud is not supported by this browser.";
+    play.disabled = true;
+    pause.disabled = true;
+    stop.disabled = true;
+    return;
+  }
+
+  let chunks = [];
+  let current = 0;
+  let stopped = true;
+
+  function prepareText() {
+    const text = article.innerText
+      .replace(/\\s+/g, " ")
+      .trim();
+
+    const words = text.split(" ");
+    const chunkSize = 120;
+
+    chunks = [];
+
+    for (let i = 0; i < words.length; i += chunkSize) {
+      chunks.push(words.slice(i, i + chunkSize).join(" "));
+    }
+  }
+
+  function speakNext() {
+    if (stopped || current >= chunks.length) {
+      if (current >= chunks.length) {
+        status.textContent = "Finished reading";
+        stopped = true;
+        current = 0;
+      }
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(chunks[current]);
+
+    utterance.lang = "en-NG";
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+
+    utterance.onstart = function(){
+      status.textContent = "Reading…";
+    };
+
+    utterance.onend = function(){
+      current++;
+      speakNext();
+    };
+
+    utterance.onerror = function(){
+      status.textContent = "Unable to continue reading.";
+      stopped = true;
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  play.addEventListener("click", function(){
+    if (!chunks.length) prepareText();
+
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      stopped = false;
+      status.textContent = "Reading…";
+      return;
+    }
+
+    if (window.speechSynthesis.speaking) {
+      return;
+    }
+
+    if (current >= chunks.length) current = 0;
+
+    stopped = false;
+    speakNext();
+  });
+
+  pause.addEventListener("click", function(){
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.pause();
+      status.textContent = "Paused";
+    }
+  });
+
+  stop.addEventListener("click", function(){
+    stopped = true;
+    current = 0;
+    window.speechSynthesis.cancel();
+    status.textContent = "Listen to this insight";
+  });
+
+  window.addEventListener("beforeunload", function(){
+    window.speechSynthesis.cancel();
+  });
+})();
+</script>
+  
+  <div class="cta-banner"><h2>Building something that matters?</h2><p>OAS Solutions helps organizations turn ideas, business problems and opportunities into practical digital products.</p><a href="${OAS_URL}/#contact">Talk to OAS Solutions →</a></div><div class="author-card"><div class="avatar">A</div><div><div class="author-name">Ademuyiwa Otubusin</div><div class="author-role">Founder &amp; CEO, OAS Solutions Ltd</div></div></div><div class="share"><div class="share-title">Share this insight</div><div class="share-links"><a target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}">LinkedIn</a><a target="_blank" rel="noopener" href="https://api.whatsapp.com/send?text=${encodeURIComponent(m.title+' — '+url)}">WhatsApp</a><a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(m.title)}&url=${encodeURIComponent(url)}">X</a></div></div><section class="comments">
+  <h2 class="section-title" style="font-size:25px;margin-bottom:7px">
+    Join the conversation
+  </h2>
+  <p style="color:var(--muted);font-size:13px">
+    Share your thoughts, questions or experience.
+  </p>
+  <hyvor-talk-comments
+    website-id="15865"
+    page-id="${escapeAttr(url)}">
+  </hyvor-talk-comments>
+  <script async src="https://talk.hyvor.com/embed/embed.js"></script>
+</section>${relatedHTML?`<section class="related"><h2>More from OAS Insights</h2><div class="related-grid">${relatedHTML}</div></section>`:""}</article>${getSidebarHTML(posts,categories,m.categories[0]||null)}</div></main>`;
+  return pageShell({
+  title:`${m.title} — ${SITE_NAME}`,
+  head:commonHead({
+    title:`${m.title} — ${SITE_NAME}`,
+    description:m.summary,
+    canonical:url,
+    image,
+    type:'article',
+    jsonld:schema
+  }),
+  body,
+  categories
+});
 }
 
 // ─── SEO FILES ────────────────────────────────────────────────────────────────
@@ -490,6 +1231,12 @@ async function generate(){
   const posts=await fetchPublishedPosts(); console.log(`📚 ${posts.length} published post(s)`);
   const categories=extractCategories(posts); console.log(`🏷️ ${categories.length} categor${categories.length===1?'y':'ies'}`);
   fs.writeFileSync(path.join(dist,'index.html'),generateIndexPage(posts));
+  fs.mkdirSync(path.join(dist, 'categories'), { recursive: true });
+
+fs.writeFileSync(
+  path.join(dist, 'categories', 'index.html'),
+  generateCategoriesPage(categories, posts)
+);
   for(const cat of categories){const dir=path.join(catDir,categorySlug(cat));fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),generateCategoryPage(cat,posts,categories));}
     for(const post of posts){const m=getPostMeta(post);if(!m.slug){console.warn(`⚠️ Skipping ${m.title}: missing slug`);continue;}const blocks=await fetchPageBlocks(post.id);const dir=path.join(postsDir,m.slug);fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),generatePostPage(post,blocks,posts,categories));console.log(`📝 ${m.slug}`);}
   fs.writeFileSync(path.join(dist,'sitemap.xml'),generateSitemap(posts,categories));
